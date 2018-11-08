@@ -5,68 +5,74 @@ VAR
     i : 0..9;
     f : 1..13;
     ttd : array 1..3 of {free,occupied};
-    vss : array 1..3 of array 1..3 of {free, occupied};
+    vss : array 1..9 of {free, occupied};
 
 INVAR
         i < f;
 
 ASSIGN 
+    
     init(flag) := FALSE;
     init(i) := 0;
     init(f) := 2;
 
-    
+    init(vss[1]) := i>0       ? free : occupied;    
+    init(vss[2]) := i>1 | f<2 ? free : occupied;
+    init(vss[3]) := i>2 | f<3 ? free : occupied;
+    init(vss[4]) := i>3 | f<4 ? free : occupied;
+    init(vss[5]) := i>4 | f<5 ? free : occupied;
+    init(vss[6]) := i>5 | f<6 ? free : occupied;
+    init(vss[7]) := i>6 | f<7 ? free : occupied;
+    init(vss[8]) := i>7 | f<8 ? free : occupied;
+    init(vss[9]) := i>8 | f<9 ? free : occupied;
 
-    init(vss[1][1]) := i>0       ? free : occupied;    
-    init(vss[1][2]) := i>1 | f<2 ? free : occupied;
-    init(vss[1][3]) := i>2 | f<3 ? free : occupied;
-    init(vss[2][1]) := i>3 | f<4 ? free : occupied;
-    init(vss[2][2]) := i>4 | f<5 ? free : occupied;
-    init(vss[2][3]) := i>5 | f<6 ? free : occupied;
-    init(vss[3][1]) := i>6 | f<7 ? free : occupied;
-    init(vss[3][2]) := i>7 | f<8 ? free : occupied;
-    init(vss[3][3]) := i>8 | f<9 ? free : occupied;
+    init(ttd[1]) := vss[1] = occupied
+    | vss[2] = occupied
+    | vss[3] = occupied ? occupied : free;
 
-    init(ttd[1]) := vss[1][1] = occupied
-    | vss[1][2] = occupied
-    | vss[1][3] = occupied ? occupied : free;
+    init(ttd[2]) := vss[4] = occupied
+    | vss[5] = occupied
+    | vss[6] = occupied ? occupied : free;
 
-    init(ttd[2]) := vss[2][1] = occupied
-    | vss[2][2] = occupied
-    | vss[2][3] = occupied ? occupied : free;
-
-    init(ttd[3]) := vss[3][1] = occupied
-    | vss[3][2] = occupied
-    | vss[3][3] = occupied ? occupied : free;
+    init(ttd[3]) := vss[7] = occupied
+    | vss[8] = occupied
+    | vss[9] = occupied ? occupied : free;
 
 
     next(flag) := !flag;
     next(i) := flag & i<9 ? i + 1 : i;
-    next(f) := flag | f=13 ? f : f + 1;
+    next(f) := flag | f = 13 ? f : f + 1;
 
-    next(vss[1][1]) := next(i)>0       ? free : occupied;
-    next(vss[1][2]) := next(i)>1 | next(f)<2 ? free : occupied;
-    next(vss[1][3]) := next(i)>2 | next(f)<3 ? free : occupied;
-    next(vss[2][1]) := next(i)>3 | next(f)<4 ? free : occupied;
-    next(vss[2][2]) := next(i)>4 | next(f)<5 ? free : occupied;
-    next(vss[2][3]) := next(i)>5 | next(f)<6 ? free : occupied;
-    next(vss[3][1]) := next(i)>6 | next(f)<7 ? free : occupied;
-    next(vss[3][2]) := next(i)>7 | next(f)<8 ? free : occupied;
-    next(vss[3][3]) := next(i)>8 | next(f)<9 ? free : occupied;
+    next(vss[1]) := next(i)>0       ? free : occupied;
+    next(vss[2]) := next(i)>1 | next(f)<2 ? free : occupied;
+    next(vss[3]) := next(i)>2 | next(f)<3 ? free : occupied;
+    next(vss[4]) := next(i)>3 | next(f)<4 ? free : occupied;
+    next(vss[5]) := next(i)>4 | next(f)<5 ? free : occupied;
+    next(vss[6]) := next(i)>5 | next(f)<6 ? free : occupied;
+    next(vss[7]) := next(i)>6 | next(f)<7 ? free : occupied;
+    next(vss[8]) := next(i)>7 | next(f)<8 ? free : occupied;
+    next(vss[9]) := next(i)>8 | next(f)<9 ? free : occupied;
 
-    next(ttd[1]) := next(vss[1][1]) = occupied
-    | next(vss[1][2]) = occupied
-    | next(vss[1][3]) = occupied ? occupied : free;
+    next(ttd[1]) := next(vss[1]) = occupied
+    | next(vss[2]) = occupied
+    | next(vss[3]) = occupied ? occupied : free;
 
-    next(ttd[2]) := next(vss[2][1]) = occupied
-    | next(vss[2][2]) = occupied
-    | next(vss[2][3]) = occupied ? occupied : free;
+    next(ttd[2]) := next(vss[4]) = occupied
+    | next(vss[5]) = occupied
+    | next(vss[6]) = occupied ? occupied : free;
 
-    next(ttd[3]) := next(vss[3][1]) = occupied
-    | next(vss[3][2]) = occupied
-    | next(vss[3][3]) = occupied ? occupied : free;
+    next(ttd[3]) := next(vss[7]) = occupied
+    | next(vss[8]) = occupied
+    | next(vss[9]) = occupied ? occupied : free;
 
 
-    DEFINE 
-        goal := i = 9;
+DEFINE 
+    goal := ttd[1] = free &
+            ttd[2] = free &
+            ttd[3] = free;
 
+LTLSPEC 
+    G !goal
+
+CTLSPEC
+    ! (EF goal)    
